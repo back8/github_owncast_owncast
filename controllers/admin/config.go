@@ -434,6 +434,26 @@ func SetSocialHandles(w http.ResponseWriter, r *http.Request) {
 	controllers.WriteSimpleResponse(w, true, "social handles updated")
 }
 
+// SetExternalActions will set the 3rd party actions for the web interface.
+func SetExternalActions(w http.ResponseWriter, r *http.Request) {
+	if !requirePOST(w, r) {
+		return
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	var actions []models.ExternalAction
+	if err := decoder.Decode(&actions); err != nil {
+		controllers.WriteSimpleResponse(w, false, "unable to update external actions with provided values")
+		return
+	}
+
+	if err := data.SetExternalActions(actions); err != nil {
+		controllers.WriteSimpleResponse(w, false, "unable to update external actions with provided values")
+	}
+
+	controllers.WriteSimpleResponse(w, true, "external actions update")
+}
+
 func requirePOST(w http.ResponseWriter, r *http.Request) bool {
 	if r.Method != controllers.POST {
 		controllers.WriteSimpleResponse(w, false, r.Method+" not supported")
